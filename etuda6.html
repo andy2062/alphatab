@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Etuda6</title>
+  <script src="https://cdn.jsdelivr.net/npm/alphatab@latest/dist/alphaTab.min.js"></script>
+  <style>
+    body { font-family: sans-serif; background: #f8f8f8; margin: 0; padding: 2em; }
+    a { text-decoration: none; color: #555; }
+    #alphaTab { margin-top: 20px; height: 600px; border: 1px solid #ccc; background: white; overflow: auto; }
+  </style>
+</head>
+<body>
+  <h2><a href="index.html">← Späť na zoznam</a></h2>
+  <h1>🎶 Pieseň 1</h1>
+  <div id="alphaTab"></div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const el = document.querySelector("#alphaTab");
+      new alphaTab.AlphaTab(el, {
+        file: "Etude VI.gp" // súbor s notami
+      });
+    });
+  </script>
+</body>
+</html>
