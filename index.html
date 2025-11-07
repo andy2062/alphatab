@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>🎸 AlphaTab Gitarový prehrávač</title>
-  <!-- Nová AlphaTab knižnica -->
+  <!-- Načítaj aktuálnu knižnicu AlphaTab -->
   <script src="https://cdn.jsdelivr.net/npm/alphatab@latest/dist/alphaTab.js"></script>
   <style>
     body { font-family: sans-serif; margin: 20px; background: #f8f8f8; }
@@ -16,31 +16,20 @@
   <div id="alphaTab"></div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
       const el = document.querySelector("#alphaTab");
       
-      // 🔧 overíme, čo je v window (niektoré buildy menia názvy)
-      const AlphaTabClass = window.alphaTab?.AlphaTabApi 
-        || window.AlphaTabApi 
-        || window.AlphaTab 
-        || window.alphaTab;
-
-      if (!AlphaTabClass) {
-        console.error("AlphaTab API sa nenačítalo – skontroluj CDN link.");
-        return;
+      try {
+        // ✅ Nový spôsob inicializácie AlphaTab
+        await alphaTab.render(el, {
+          file: "oteckovia.gp5" // nahraj tento súbor do rovnakého priečinka
+        });
+        console.log("✅ AlphaTab načítaný úspešne");
+      } catch (err) {
+        console.error("❌ Chyba pri načítaní AlphaTab:", err);
       }
-
-      // 🔹 inicializácia prehrávača
-      const api = new AlphaTabClass(el, {
-        file: "oteckovia.gp5" // nahraj tento súbor do rovnakého priečinka
-      });
     });
   </script>
 </body>
 </html>
-
-
-
-
-
-
+   
