@@ -1,37 +1,45 @@
-uda6<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="sk">
 <head>
-  <meta charset="UTF-8" />
-  <title>🎸 Moje gitarové skladby</title>
-  <script src="https://cdn.jsdelivr.net/npm/alphatab@latest/dist/alphaTab.min.js"></script>
+  <meta charset="UTF-8">
+  <title>🎸 AlphaTab Gitarový prehrávač</title>
+  <!-- Nová AlphaTab knižnica -->
+  <script src="https://cdn.jsdelivr.net/npm/alphatab@latest/dist/alphaTab.js"></script>
   <style>
-    body { font-family: sans-serif; background: #f8f8f8; margin: 0; padding: 2em; }
+    body { font-family: sans-serif; margin: 20px; background: #f8f8f8; }
     h1 { text-align: center; }
-    .menu a { display: inline-block; margin: 8px; padding: 10px 15px; background: #eee; border-radius: 8px; text-decoration: none; color: #333; }
-    .menu a:hover { background: #ddd; }
-    #alphaTab { margin-top: 20px; height: 600px; border: 1px solid #ccc; background: white; overflow: auto; }
+    #alphaTab { height: 600px; border: 1px solid #ccc; background: white; overflow: auto; }
   </style>
 </head>
 <body>
   <h1>🎸 Moje gitarové skladby</h1>
-
-  <div class="menu">
-    <a href="index.html">Úvodná skladba</a>
-    <a href="etuda6.html">Etuda 6</a>
-    <a href="piesen2.html">Pieseň 2</a>
-  </div>
-
   <div id="alphaTab"></div>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const el = document.querySelector("#alphaTab");
-    const api = new alphaTab.AlphaTabApi(el, {
-      file: "Etude VI.gp" // nahraj tento súbor do rovnakého priečinka
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const el = document.querySelector("#alphaTab");
+      
+      // 🔧 overíme, čo je v window (niektoré buildy menia názvy)
+      const AlphaTabClass = window.alphaTab?.AlphaTabApi 
+        || window.AlphaTabApi 
+        || window.AlphaTab 
+        || window.alphaTab;
+
+      if (!AlphaTabClass) {
+        console.error("AlphaTab API sa nenačítalo – skontroluj CDN link.");
+        return;
+      }
+
+      // 🔹 inicializácia prehrávača
+      const api = new AlphaTabClass(el, {
+        file: "Etude VI.gp" // nahraj tento súbor do rovnakého priečinka
+      });
     });
-  });
-</script>
+  </script>
 </body>
 </html>
+
+
 
 
 
