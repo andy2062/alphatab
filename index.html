@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>🎸 AlphaTab Gitarový prehrávač</title>
 
-  <!-- Použi verziu 1.4.3, ktorá exportuje global `alphaTab` -->
+  <!-- Staršia, nemodulová verzia AlphaTab -->
   <script src="https://cdn.jsdelivr.net/npm/alphatab@1.4.3/dist/alphaTab.min.js"></script>
 
   <style>
@@ -20,9 +20,15 @@
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const el = document.querySelector("#alphaTab");
+
+      // ✅ Toto je správne API pre verziu 1.4.3
       const api = new alphaTab.AlphaTabApi(el, {
       file: "oteckovia.gp5" // nahraj tento súbor do rovnakého priečinka
       });
+
+      // Voliteľné – reakcie na udalosti
+      api.renderStarted.on(() => console.log("🎶 Začína sa renderovanie nôt..."));
+      api.renderFinished.on(() => console.log("✅ Noty boli zobrazené."));
     });
   </script>
 </body>
