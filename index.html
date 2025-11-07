@@ -134,3 +134,55 @@
       player: {
         enablePlayer: true,
         soundFont: "https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2",
+        scrollElement: wrapper.querySelector('.at-viewport')
+      }
+    });
+
+    // Zmena skladby po výbere
+    select.addEventListener("change", () => {
+      api.loadScore(select.value);
+    });
+
+    // Ovládacie prvky
+    const playPause = wrapper.querySelector(".at-player-play-pause");
+    const stop = wrapper.querySelector(".at-player-stop");
+    const loop = wrapper.querySelector(".at-loop");
+    const metronome = wrapper.querySelector(".at-metronome");
+    const printBtn = wrapper.querySelector(".at-print");
+    const progress = wrapper.querySelector(".at-player-progress");
+    const position = wrapper.querySelector(".at-song-position");
+
+    playPause.onclick = () => api.playPause();
+    stop.onclick = () => api.stop();
+    loop.onclick = () => {
+      loop.classList.toggle("active");
+      api.isLooping = loop.classList.contains("active");
+    };
+    metronome.onclick = () => {
+      metronome.classList.toggle("active");
+      api.metronomeVolume = metronome.classList.contains("active") ? 1 : 0;
+    };
+    printBtn.onclick = () => api.print();
+
+    api.soundFontLoad.on(e => {
+      const percent = Math.floor((e.loaded / e.total) * 100);
+      progress.innerText = percent + "%";
+    });
+    api.playerReady.on(() => {
+      playPause.classList.remove("disabled");
+      stop.classList.remove("disabled");
+      progress.style.display = "none";
+    });
+
+    api.playerPositionChanged.on(e => {
+      const minutes = (e.currentTime / 60000) | 0;
+      const seconds = ((e.currentTime % 60000) / 1000) | 0;
+      const endMinutes = (e.endTime / 60000) | 0;
+      const endSeconds = ((e.endTime % 60000) / 1000) | 0;
+      position.innerText = 
+        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} / ${String(endMinutes).padStart(2, '0')}:${String(endSeconds).padStart(2, '0')}`;
+    });
+  </script>
+</body>
+</html>
+
