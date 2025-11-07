@@ -2,83 +2,31 @@
 <html lang="sk">
 <head>
   <meta charset="UTF-8">
-  <title>🎸 Gitarové skladby – AlphaTab prehrávač</title>
-  <script src="https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/alphaTab.js"></script>
+  <title>Moje gitarové skladby</title>
+  <script src="https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.5.0/dist/alphaTab.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
   <style>
     body {
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 12px;
-      background: #f8f8f8;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #fafafa;
+      margin: 40px;
     }
     h1 {
-      text-align: center;
-      margin-top: 10px;
+      color: #333;
     }
-    .song-select {
-      display: flex;
-      justify-content: center;
-      margin: 10px 0;
-    }
-    select {
-      font-size: 14px;
-      padding: 5px 10px;
-    }
-    .at-wrap {
-      width: 90vw;
-      height: 80vh;
-      margin: 0 auto;
-      border: 1px solid rgba(0,0,0,0.12);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      position: relative;
+    #alphaTab {
+      width: 90%;
+      height: 75vh;
+      margin: 20px auto;
+      border: 1px solid #ccc;
       background: white;
     }
-    .at-content {
-      position: relative;
-      overflow: hidden;
-      flex: 1 1 auto;
-    }
-    .at-viewport {
-      overflow-y: auto;
-      position: absolute;
-      top: 0;
-      left: 70px;
-      right: 0;
-      bottom: 0;
-      padding-right: 20px;
-    }
-    .at-controls {
-      flex: 0 0 auto;
-      display: flex;
-      justify-content: space-between;
-      background: #436d9d;
-      color: #fff;
-    }
-    .at-controls > div {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-    }
-    .at-controls .btn {
-      color: #fff;
-      border-radius: 0;
-      width: 40px;
-      height: 40px;
+    select {
       font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
+      padding: 6px 10px;
+      margin-left: 10px;
     }
-    .at-controls .btn.disabled {
-      cursor: progress;
-      opacity: 0.5;
-    }
-    .at-player-progress { margin-left: 10px; }
-    .at-song-position { margin-left: 10px; }
   </style>
 </head>
 <body>
@@ -86,7 +34,7 @@
 
   <label for="songSelect">Vyber skladbu:</label>
   <select id="songSelect">
-   <option value="Tears-In-Heaven.gp3">Tears In Heaven</option>
+  <option value="Tears-In-Heaven.gp3">Tears In Heaven</option>
       <option value="Etude VI.gp">Etuda VI</option>
       <option value="oteckovia.gp5">Oteckovia</option>
   </select>
@@ -97,20 +45,30 @@
     window.onload = function() {
       const container = document.getElementById("alphaTab");
       const select = document.getElementById("songSelect");
+      let api = null;
 
       function loadSong(fileName) {
-        container.innerHTML = ""; // vyčisti starý obsah
-        new alphaTab.AlphaTabApi(container, {
+        if (api) {
+          api.destroy();
+          container.innerHTML = "";
+        }
+
+        api = new alphaTab.AlphaTabApi(container, {
           file: fileName,
+          controls: "default", // <--- toto zobrazí prehrávač
           player: {
             enablePlayer: true,
             soundFont: "https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.5.0/dist/soundfont/sonivox.sf2"
           }
         });
+
+        api.scoreLoaded.on((score) => {
+          console.log("Načítaná skladba:", score.title);
+        });
       }
 
       select.addEventListener("change", () => loadSong(select.value));
-      loadSong(select.value); // načíta prvú skladbu hneď po spustení
+      loadSong(select.value);
     };
   </script>
 </body>
