@@ -22,16 +22,16 @@ uda6<!DOCTYPE html>
   </div>
 
   <div id="alphaTab"></div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const el = document.querySelector("#alphaTab");
-      new alphaTab.AlphaTab(el, {
-        file: "Etude VI.gp" // nahraj tento súbor do rovnakého priečinka
-      });
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const el = document.querySelector("#alphaTab");
+    const api = new alphaTab.AlphaTabApi(el, {
+      file: "Etude VI.gp" // nahraj tento súbor do rovnakého priečinka
     });
-  </script>
+  });
+</script>
 </body>
 </html>
+
 
 
