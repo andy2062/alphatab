@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>🎸 AlphaTab Gitarový prehrávač</title>
-  <!-- Načítaj aktuálnu knižnicu AlphaTab -->
-  <script src="https://cdn.jsdelivr.net/npm/alphatab@latest/dist/alphaTab.js"></script>
+
+  <!-- Použi verziu 1.4.3, ktorá exportuje global `alphaTab` -->
+  <script src="https://cdn.jsdelivr.net/npm/alphatab@1.4.3/dist/alphaTab.min.js"></script>
+
   <style>
     body { font-family: sans-serif; margin: 20px; background: #f8f8f8; }
     h1 { text-align: center; }
@@ -16,20 +18,12 @@
   <div id="alphaTab"></div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", async () => {
+    document.addEventListener("DOMContentLoaded", () => {
       const el = document.querySelector("#alphaTab");
-      
-      try {
-        // ✅ Nový spôsob inicializácie AlphaTab
-        await alphaTab.render(el, {
-          file: "oteckovia.gp5" // nahraj tento súbor do rovnakého priečinka
-        });
-        console.log("✅ AlphaTab načítaný úspešne");
-      } catch (err) {
-        console.error("❌ Chyba pri načítaní AlphaTab:", err);
-      }
+      const api = new alphaTab.AlphaTabApi(el, {
+      file: "oteckovia.gp5" // nahraj tento súbor do rovnakého priečinka
+      });
     });
   </script>
 </body>
 </html>
-   
