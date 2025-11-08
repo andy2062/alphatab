@@ -1,243 +1,220 @@
 <!DOCTYPE html>
 <html lang="sk">
-  <head>
-    <meta charset="utf-8" />
-    <title>Moje gitarové skladby</title>
-    <script src="https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.5.0/dist/alphaTab.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<head>
+  <meta charset="utf-8" />
+  <title>🎸 Moje gitarové skladby</title>
+  <script src="https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.5.0/dist/alphaTab.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f8f8f8;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    select {
+      font-size: 16px;
+      padding: 6px 10px;
+      margin-bottom: 15px;
+    }
 
-    <style>
-      body {
-        font-family: Arial, Helvetica, sans-serif;
-        background: #f7f7f7;
-        margin: 20px;
-        text-align: center;
-      }
-      h1 {
-        font-size: 24px;
-        margin-bottom: 10px;
-      }
-      select {
-        font-size: 16px;
-        padding: 6px 10px;
-        margin-bottom: 15px;
-      }
+    .at-wrap {
+      width: 90vw;
+      height: 80vh;
+      margin: 0 auto;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
 
-      .at-wrap {
-        width: 80vw;
-        height: 80vh;
-        margin: 0 auto;
-        border: 1px solid rgba(0, 0, 0, 0.12);
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        position: relative;
-        background: #fff;
-      }
+    .at-viewport {
+      overflow-y: auto;
+      flex: 1;
+      padding: 10px;
+    }
 
-      .at-content {
-        position: relative;
-        overflow: hidden;
-        flex: 1 1 auto;
-      }
+    /* HUD (ovládanie) */
+    .at-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #2f4f80;
+      color: #fff;
+      padding: 5px 10px;
+    }
 
-      .at-sidebar {
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        max-width: 70px;
-        width: auto;
-        display: flex;
-        align-content: stretch;
-        z-index: 1001;
-        overflow: hidden;
-        border-right: 1px solid rgba(0, 0, 0, 0.12);
-        background: #f7f7f7;
-      }
+    .at-controls .btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      margin: 0 5px;
+    }
 
-      .at-sidebar:hover {
-        max-width: 400px;
-        transition: max-width 0.2s;
-        overflow-y: auto;
-      }
+    .at-controls select {
+      background: #2f4f80;
+      color: #fff;
+      border: 1px solid #4f6f9f;
+      border-radius: 5px;
+      padding: 3px 5px;
+    }
 
-      .at-viewport {
-        overflow-y: auto;
-        position: absolute;
-        top: 0;
-        left: 70px;
-        right: 0;
-        bottom: 0;
-        padding-right: 20px;
-      }
+    .at-player-progress {
+      font-size: 12px;
+      margin: 0 8px;
+    }
 
-      .at-footer {
-        flex: 0 0 auto;
-        background: #436d9d;
-        color: #fff;
-      }
+    .at-cursor-beat {
+      background: rgba(0, 120, 255, 0.75);
+      width: 3px;
+    }
 
-      .at-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 1002;
-        backdrop-filter: blur(3px);
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-      }
+    .at-cursor-bar {
+      background: rgba(255, 255, 0, 0.25);
+    }
 
-      .at-overlay-content {
-        margin-top: 20px;
-        background: #fff;
-        box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.3);
-        padding: 10px;
-      }
-    </style>
-  </head>
+    .at-highlight * {
+      fill: #0078ff;
+      stroke: #0078ff;
+    }
+  </style>
+</head>
+<body>
+  <h1><i class="fa-solid fa-guitar"></i> Moje gitarové skladby</h1>
 
-  <body>
-    <h1><i class="fa-solid fa-guitar"></i> Moje gitarové skladby</h1>
+  <label for="songSelect">Vyber skladbu:</label>
+  <select id="songSelect">
+    <option value="Etuda-VI.gp5">Etuda VI</option>
+    <option value="Oteckovia.gp5">Oteckovia</option>
+    <option value="Tears-In-Heaven.gp3">Tears In Heaven</option>
+   </select>
 
-    <label for="songSelect">Vyber skladbu:</label>
-    <select id="songSelect">
-      <option value="Tears-In-Heaven.gp3">Tears In Heaven</option>
-      <option value="Etude VI.gp">Etuda VI</option>
-      <option value="oteckovia.gp5">Oteckovia</option>
-    </select>
+  <div id="playerContainer"></div>
 
-    <div id="playerContainer"></div>
+  <script>
+    const songSelect = document.getElementById("songSelect");
+    const playerContainer = document.getElementById("playerContainer");
+    let api = null;
 
-    <script>
-      const songSelect = document.getElementById("songSelect");
-      const playerContainer = document.getElementById("playerContainer");
-      let api = null;
-
-      function loadPlayer(fileName) {
-        // odstráň starý prehrávač
-        playerContainer.innerHTML = `
-          <div class="at-wrap">
-            <div class="at-overlay">
-              <div class="at-overlay-content">Načítavam noty...</div>
+    function loadSong(fileName) {
+      playerContainer.innerHTML = `
+        <div class="at-wrap">
+          <div class="at-viewport">
+            <div class="at-main"></div>
+          </div>
+          <div class="at-controls">
+            <div class="controls-left">
+              <button class="btn at-stop"><i class="fas fa-step-backward"></i></button>
+              <button class="btn at-play"><i class="fas fa-play"></i></button>
+              <span class="at-player-progress">Načítavam...</span>
             </div>
-            <div class="at-content">
-              <div class="at-sidebar">
-                <div class="at-sidebar-content">
-                  <div class="at-track-list"></div>
-                </div>
-              </div>
-              <div class="at-viewport">
-                <div class="at-main"></div>
-              </div>
-            </div>
-            <div class="at-controls">
-              <div class="at-controls-left">
-                <a class="btn at-player-stop disabled"><i class="fas fa-step-backward"></i></a>
-                <a class="btn at-player-play-pause disabled"><i class="fas fa-play"></i></a>
-                <span class="at-player-progress">0%</span>
-                <div class="at-song-info"><span class="at-song-title"></span> - <span class="at-song-artist"></span></div>
-                <div class="at-song-position">00:00 / 00:00</div>
-              </div>
-              <div class="at-controls-right">
-                <a class="btn toggle at-count-in"><i class="fas fa-hourglass-half"></i></a>
-                <a class="btn at-metronome"><i class="fas fa-edit"></i></a>
-                <a class="btn at-loop"><i class="fas fa-retweet"></i></a>
-                <a class="btn at-print"><i class="fas fa-print"></i></a>
-                <div class="at-zoom"><i class="fas fa-search"></i>
-                  <select>
-                    <option value="25">25%</option>
-                    <option value="50">50%</option>
-                    <option value="75">75%</option>
-                    <option value="100" selected>100%</option>
-                    <option value="150">150%</option>
-                    <option value="200">200%</option>
-                  </select>
-                </div>
-                <div class="at-layout">
-                  <select>
-                    <option value="horizontal">Horizontal</option>
-                    <option value="page" selected>Page</option>
-                  </select>
-                </div>
-              </div>
+            <div class="controls-right">
+              <button class="btn at-count"><i class="fas fa-hourglass-half"></i></button>
+              <button class="btn at-metronome"><i class="fas fa-drum"></i></button>
+              <button class="btn at-loop"><i class="fas fa-retweet"></i></button>
+              <button class="btn at-print"><i class="fas fa-print"></i></button>
+              <select class="zoom">
+                <option value="75">75%</option>
+                <option value="100" selected>100%</option>
+                <option value="125">125%</option>
+                <option value="150">150%</option>
+              </select>
+              <select class="layout">
+                <option value="horizontal">Horizontal</option>
+                <option value="page" selected>Page</option>
+              </select>
             </div>
           </div>
-          <template id="at-track-template">
-            <div class="at-track">
-              <div class="at-track-icon"><i class="fas fa-guitar"></i></div>
-              <div class="at-track-details"><div class="at-track-name"></div></div>
-            </div>
-          </template>
-        `;
+        </div>
+      `;
 
-        const wrapper = playerContainer.querySelector(".at-wrap");
-        const main = wrapper.querySelector(".at-main");
-
-        const settings = {
-          file: fileName,
-          player: {
-            enablePlayer: true,
-            soundFont: "https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.5.0/dist/soundfont/sonivox.sf2",
-            scrollElement: wrapper.querySelector('.at-viewport')
-          }
-        };
-
-        api = new alphaTab.AlphaTabApi(main, settings);
-
-        const overlay = wrapper.querySelector(".at-overlay");
-        api.renderStarted.on(() => overlay.style.display = "flex");
-        api.renderFinished.on(() => overlay.style.display = "none");
-
-        // ostatné ovládanie ako predtým:
-        const playPause = wrapper.querySelector(".at-player-play-pause");
-        const stop = wrapper.querySelector(".at-player-stop");
-        const progress = wrapper.querySelector(".at-player-progress");
-        const songPos = wrapper.querySelector(".at-song-position");
-
-        api.soundFontLoad.on((e) => {
-          const p = Math.floor((e.loaded / e.total) * 100);
-          progress.innerText = p + "%";
-        });
-
-        api.playerReady.on(() => {
-          progress.style.display = "none";
-          playPause.classList.remove("disabled");
-          stop.classList.remove("disabled");
-        });
-
-        playPause.onclick = () => api.playPause();
-        stop.onclick = () => api.stop();
-
-        api.playerStateChanged.on((e) => {
-          const icon = playPause.querySelector("i");
-          if (e.state === alphaTab.synth.PlayerState.Playing) {
-            icon.classList.replace("fa-play", "fa-pause");
-          } else {
-            icon.classList.replace("fa-pause", "fa-play");
-          }
-        });
-
-        function format(ms) {
-          let s = Math.floor(ms / 1000);
-          const m = Math.floor(s / 60);
-          s = s % 60;
-          return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+      const wrapper = playerContainer.querySelector(".at-wrap");
+      const main = wrapper.querySelector(".at-main");
+      const settings = {
+        file: fileName,
+        player: {
+          enablePlayer: true,
+          soundFont: "https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.5.0/dist/soundfont/sonivox.sf2",
+          scrollElement: wrapper.querySelector('.at-viewport')
         }
+      };
 
-        api.playerPositionChanged.on((e) => {
-          songPos.innerText = `${format(e.currentTime)} / ${format(e.endTime)}`;
-        });
-      }
+      api = new alphaTab.AlphaTabApi(main, settings);
 
-      songSelect.addEventListener("change", () => loadPlayer(songSelect.value));
-      loadPlayer(songSelect.value);
-    </script>
-  </body>
+      const playBtn = wrapper.querySelector(".at-play");
+      const stopBtn = wrapper.querySelector(".at-stop");
+      const prog = wrapper.querySelector(".at-player-progress");
+      const metronome = wrapper.querySelector(".at-metronome");
+      const loop = wrapper.querySelector(".at-loop");
+      const zoom = wrapper.querySelector(".zoom");
+      const layout = wrapper.querySelector(".layout");
+
+      // Zvýraznenie počas prehrávania
+      api.cursorChanged.on((cursor) => {
+        if (cursor.beat) cursor.beat.element.scrollIntoView({ block: "center" });
+      });
+
+      api.playerReady.on(() => {
+        prog.innerText = "Pripravené";
+      });
+
+      playBtn.onclick = () => api.playPause();
+      stopBtn.onclick = () => api.stop();
+
+      api.playerStateChanged.on((e) => {
+        const icon = playBtn.querySelector("i");
+        if (e.state === alphaTab.synth.PlayerState.Playing) {
+          icon.classList.replace("fa-play", "fa-pause");
+        } else {
+          icon.classList.replace("fa-pause", "fa-play");
+        }
+      });
+
+      api.soundFontLoad.on((e) => {
+        const percent = Math.floor((e.loaded / e.total) * 100);
+        prog.innerText = `Načítavam zvuky: ${percent}%`;
+      });
+
+      // Metronóm
+      metronome.onclick = () => {
+        metronome.classList.toggle("active");
+        api.metronomeVolume = metronome.classList.contains("active") ? 1 : 0;
+      };
+
+      // Loop
+      loop.onclick = () => {
+        loop.classList.toggle("active");
+        api.isLooping = loop.classList.contains("active");
+      };
+
+      // Zoom
+      zoom.onchange = () => {
+        api.settings.display.scale = parseInt(zoom.value) / 100;
+        api.updateSettings();
+        api.render();
+      };
+
+      // Layout
+      layout.onchange = () => {
+        api.settings.display.layoutMode = layout.value === "horizontal"
+          ? alphaTab.LayoutMode.Horizontal
+          : alphaTab.LayoutMode.Page;
+        api.updateSettings();
+        api.render();
+      };
+    }
+
+    songSelect.addEventListener("change", () => loadSong(songSelect.value));
+    loadSong(songSelect.value);
+  </script>
+</body>
 </html>
-   
- 
