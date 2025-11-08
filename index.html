@@ -2,108 +2,45 @@
 <html lang="sk">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🎵 Moje gitarové skladby</title>
+  <title>Gitarové skladby</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f8f9fa;
-      color: #222;
-      margin: 0;
+      background: #f3f3f3;
+      color: #333;
       text-align: center;
+      padding-top: 80px;
     }
-
-    header {
-      background: #222;
-      color: #fff;
-      padding: 1.2rem;
-      font-size: 1.6rem;
-      font-weight: bold;
+    h1 { color: #2c3e50; }
+    ul {
+      list-style: none;
+      padding: 0;
     }
-
-    .menu {
-      margin-top: 3rem;
+    li {
+      background: #fff;
+      margin: 10px auto;
+      width: 250px;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: background 0.3s;
     }
-
-    label {
-      font-size: 1.2rem;
-      margin-right: 0.5rem;
+    li:hover {
+      background: #e9f3ff;
     }
-
-    select {
-      font-size: 1.1rem;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-
-    .hint {
-      color: #555;
-      font-size: 0.9rem;
-      margin-top: 1rem;
-    }
-
-    footer {
-      margin-top: 3rem;
-      color: #666;
-      font-size: 0.9rem;
-    }
-
-    .song-list {
-      margin-top: 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    .song-list a {
-      display: inline-block;
-      padding: 0.5rem 1.2rem;
+    a {
       text-decoration: none;
-      background: #436d9d;
-      color: white;
-      border-radius: 8px;
-      transition: background 0.2s;
-      width: 260px;
-      text-align: center;
-    }
-
-    .song-list a:hover {
-      background: #5588c7;
+      color: #2c3e50;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <header>🎸 Moje gitarové skladby</header>
-
-  <div class="menu">
-    <label for="songSelect">Vyber skladbu:</label>
-    <select id="songSelect">
-      <option value="">-- vyber skladbu --</option>
-      <option value="etuda6.html">Etuda VI – L. Brouwer</option>
-      <option value="tears-in-heaven.html">Tears in Heaven – Eric Clapton</option>
-      <option value="oteckovia.html">Oteckovia (film)</option>
-    </select>
-    <div class="hint">(po výbere sa otvorí nová stránka s prehrávačom)</div>
-  </div>
-
-  <div class="song-list">
-    <a href="etuda6.html">🎵 Etuda VI – L. Brouwer</a>
-    <a href="tears-in-heaven.html">🎵 Tears in Heaven – Eric Clapton</a>
-    <a href="oteckovia.html">🎵 Oteckovia (film)</a>
-  </div>
-
-  <footer>
-    &copy; 2025 Moje gitarové skladby – vytvorené pomocou AlphaTab 🎶
-  </footer>
-
-  <script>
-    const select = document.getElementById('songSelect');
-    select.addEventListener('change', () => {
-      const file = select.value;
-      if (file) window.location.href = file;
-    });
-  </script>
+  <h1>🎸 Moje gitarové skladby</h1>
+  <ul>
+    <li><a href="songs/tears-in-heaven.html">Tears In Heaven</a></li>
+    <li><a href="songs/etuda6.html">Etuda č.6</a></li>
+    <li><a href="songs/wish-you-were-here.html">Wish You Were Here</a></li>
+  </ul>
 </body>
 </html>
