@@ -1,4 +1,4 @@
-      <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="sk">
 <head>
   <meta charset="UTF-8">
@@ -28,7 +28,7 @@
       margin-left: 10px;
     }
     .at-controls {
-      margin: 10px auto;
+      margin: 15px auto;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -83,12 +83,14 @@
         return `${min}:${sec}`;
       }
 
-      function loadSong(fileName) {
+      async function loadSong(fileName) {
+        // Ak existuje stará inštancia, odstránime ju
         if (api) {
           api.destroy();
           container.innerHTML = "";
         }
 
+        // Nová AlphaTab inštancia
         api = new alphaTab.AlphaTabApi(container, {
           file: fileName,
           player: {
@@ -97,21 +99,14 @@
           }
         });
 
-        // Keď je prehrávač pripravený
+        // Počkáme, kým je prehrávač pripravený
         api.playerReady.on(() => {
-          playPause.classList.remove("disabled");
-          stop.classList.remove("disabled");
+          console.log("Prehrávač pripravený");
+          playPause.onclick = () => api.playPause();
+          stop.onclick = () => api.stop();
         });
 
-        // Tlačidlá
-        playPause.onclick = () => {
-          api.playPause();
-        };
-        stop.onclick = () => {
-          api.stop();
-        };
-
-        // Aktualizácia tlačidla podľa stavu
+        // Zmena ikonky Play/Pause
         api.playerStateChanged.on((e) => {
           const icon = playPause.querySelector("i");
           if (e.state === alphaTab.synth.PlayerState.Playing) {
@@ -121,7 +116,7 @@
           }
         });
 
-        // Pozícia skladby
+        // Zobrazenie aktuálneho času prehrávania
         api.playerPositionChanged.on((e) => {
           position.innerText = `${formatTime(e.currentTime)} / ${formatTime(e.endTime)}`;
         });
