@@ -1,112 +1,218 @@
 <!DOCTYPE html>
 <html lang="sk">
-<head>
-  <meta charset="UTF-8">
-  <title>Moje gitarové skladby</title>
-  <script src="https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.5.0/dist/alphaTab.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background: #fafafa;
-      margin: 40px;
-    }
-    h1 {
-      color: #333;
-    }
-    #alphaTab {
-      width: 90%;
-      height: 70vh;
-      margin: 20px auto;
-      border: 1px solid #ccc;
-      background: white;
-    }
-    select {
-      font-size: 16px;
-      padding: 6px 10px;
-      margin-left: 10px;
-    }
-    .at-controls {
-      margin: 15px auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-    }
-    .btn {
-      cursor: pointer;
-      font-size: 20px;
-      color: #333;
-      padding: 8px 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      background: #fff;
-      transition: 0.2s;
-    }
-    .btn:hover {
-      background: #f0f0f0;
-    }
-  </style>
-</head>
-<body>
-  <h1><i class="fa-solid fa-guitar"></i> Moje gitarové skladby</h1>
+  <head>
+    <meta charset="utf-8" />
+    <title>Moje gitarové skladby</title>
+    <script src="https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.5.0/dist/alphaTab.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <label for="songSelect">Vyber skladbu:</label>
-  <select id="songSelect">
-    <option value="Tears-In-Heaven.gp3">Tears In Heaven</option>
-      <option value="Etude VI.gp">Etuda VI</option>
-      <option value="oteckovia.gp5">Oteckovia</option>
-  </select>
-
-  <div id="alphaTab"></div>
-
-  <div class="at-controls">
-    <span class="btn" id="playPause"><i class="fa-solid fa-play"></i></span>
-    <span class="btn" id="stop"><i class="fa-solid fa-stop"></i></span>
-    <span id="position">00:00 / 00:00</span>
-  </div>
-
-  <script>
-    window.onload = function() {
-      const container = document.getElementById("alphaTab");
-      const select = document.getElementById("songSelect");
-      const playPause = document.getElementById("playPause");
-      const stop = document.getElementById("stop");
-      const position = document.getElementById("position");
-      let api = null;
-
-      function formatTime(ms) {
-        const totalSec = Math.floor(ms / 1000);
-        const min = String(Math.floor(totalSec / 60)).padStart(2, "0");
-        const sec = String(totalSec % 60).padStart(2, "0");
-        return `${min}:${sec}`;
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f7f7f7;
+        margin: 20px;
+        text-align: center;
+      }
+      h1 {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+      select {
+        font-size: 16px;
+        padding: 6px 10px;
+        margin-bottom: 15px;
       }
 
-      async function loadSong(fileName) {
-        // Ak existuje stará inštancia, odstránime ju
-        if (api) {
-          api.destroy();
-          container.innerHTML = "";
-        }
+      .at-wrap {
+        width: 80vw;
+        height: 80vh;
+        margin: 0 auto;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        position: relative;
+        background: #fff;
+      }
 
-        // Nová AlphaTab inštancia
-        api = new alphaTab.AlphaTabApi(container, {
+      .at-content {
+        position: relative;
+        overflow: hidden;
+        flex: 1 1 auto;
+      }
+
+      .at-sidebar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        max-width: 70px;
+        width: auto;
+        display: flex;
+        align-content: stretch;
+        z-index: 1001;
+        overflow: hidden;
+        border-right: 1px solid rgba(0, 0, 0, 0.12);
+        background: #f7f7f7;
+      }
+
+      .at-sidebar:hover {
+        max-width: 400px;
+        transition: max-width 0.2s;
+        overflow-y: auto;
+      }
+
+      .at-viewport {
+        overflow-y: auto;
+        position: absolute;
+        top: 0;
+        left: 70px;
+        right: 0;
+        bottom: 0;
+        padding-right: 20px;
+      }
+
+      .at-footer {
+        flex: 0 0 auto;
+        background: #436d9d;
+        color: #fff;
+      }
+
+      .at-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1002;
+        backdrop-filter: blur(3px);
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+      }
+
+      .at-overlay-content {
+        margin-top: 20px;
+        background: #fff;
+        box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.3);
+        padding: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1><i class="fa-solid fa-guitar"></i> Moje gitarové skladby</h1>
+
+    <label for="songSelect">Vyber skladbu:</label>
+    <select id="songSelect">
+      <option value="Tears-In-Heaven.gp3">Tears In Heaven</option>
+      <option value="Etude VI.gp">Etuda VI</option>
+      <option value="oteckovia.gp5">Oteckovia</option>
+    </select>
+
+    <div id="playerContainer"></div>
+
+    <script>
+      const songSelect = document.getElementById("songSelect");
+      const playerContainer = document.getElementById("playerContainer");
+      let api = null;
+
+      function loadPlayer(fileName) {
+        // odstráň starý prehrávač
+        playerContainer.innerHTML = `
+          <div class="at-wrap">
+            <div class="at-overlay">
+              <div class="at-overlay-content">Načítavam noty...</div>
+            </div>
+            <div class="at-content">
+              <div class="at-sidebar">
+                <div class="at-sidebar-content">
+                  <div class="at-track-list"></div>
+                </div>
+              </div>
+              <div class="at-viewport">
+                <div class="at-main"></div>
+              </div>
+            </div>
+            <div class="at-controls">
+              <div class="at-controls-left">
+                <a class="btn at-player-stop disabled"><i class="fas fa-step-backward"></i></a>
+                <a class="btn at-player-play-pause disabled"><i class="fas fa-play"></i></a>
+                <span class="at-player-progress">0%</span>
+                <div class="at-song-info"><span class="at-song-title"></span> - <span class="at-song-artist"></span></div>
+                <div class="at-song-position">00:00 / 00:00</div>
+              </div>
+              <div class="at-controls-right">
+                <a class="btn toggle at-count-in"><i class="fas fa-hourglass-half"></i></a>
+                <a class="btn at-metronome"><i class="fas fa-edit"></i></a>
+                <a class="btn at-loop"><i class="fas fa-retweet"></i></a>
+                <a class="btn at-print"><i class="fas fa-print"></i></a>
+                <div class="at-zoom"><i class="fas fa-search"></i>
+                  <select>
+                    <option value="25">25%</option>
+                    <option value="50">50%</option>
+                    <option value="75">75%</option>
+                    <option value="100" selected>100%</option>
+                    <option value="150">150%</option>
+                    <option value="200">200%</option>
+                  </select>
+                </div>
+                <div class="at-layout">
+                  <select>
+                    <option value="horizontal">Horizontal</option>
+                    <option value="page" selected>Page</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <template id="at-track-template">
+            <div class="at-track">
+              <div class="at-track-icon"><i class="fas fa-guitar"></i></div>
+              <div class="at-track-details"><div class="at-track-name"></div></div>
+            </div>
+          </template>
+        `;
+
+        const wrapper = playerContainer.querySelector(".at-wrap");
+        const main = wrapper.querySelector(".at-main");
+
+        const settings = {
           file: fileName,
           player: {
             enablePlayer: true,
-            soundFont: "https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.5.0/dist/soundfont/sonivox.sf2"
+            soundFont: "https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.5.0/dist/soundfont/sonivox.sf2",
+            scrollElement: wrapper.querySelector('.at-viewport')
           }
+        };
+
+        api = new alphaTab.AlphaTabApi(main, settings);
+
+        const overlay = wrapper.querySelector(".at-overlay");
+        api.renderStarted.on(() => overlay.style.display = "flex");
+        api.renderFinished.on(() => overlay.style.display = "none");
+
+        // ostatné ovládanie ako predtým:
+        const playPause = wrapper.querySelector(".at-player-play-pause");
+        const stop = wrapper.querySelector(".at-player-stop");
+        const progress = wrapper.querySelector(".at-player-progress");
+        const songPos = wrapper.querySelector(".at-song-position");
+
+        api.soundFontLoad.on((e) => {
+          const p = Math.floor((e.loaded / e.total) * 100);
+          progress.innerText = p + "%";
         });
 
-        // Počkáme, kým je prehrávač pripravený
         api.playerReady.on(() => {
-          console.log("Prehrávač pripravený");
-          playPause.onclick = () => api.playPause();
-          stop.onclick = () => api.stop();
+          progress.style.display = "none";
+          playPause.classList.remove("disabled");
+          stop.classList.remove("disabled");
         });
 
-        // Zmena ikonky Play/Pause
+        playPause.onclick = () => api.playPause();
+        stop.onclick = () => api.stop();
+
         api.playerStateChanged.on((e) => {
           const icon = playPause.querySelector("i");
           if (e.state === alphaTab.synth.PlayerState.Playing) {
@@ -116,15 +222,22 @@
           }
         });
 
-        // Zobrazenie aktuálneho času prehrávania
+        function format(ms) {
+          let s = Math.floor(ms / 1000);
+          const m = Math.floor(s / 60);
+          s = s % 60;
+          return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+        }
+
         api.playerPositionChanged.on((e) => {
-          position.innerText = `${formatTime(e.currentTime)} / ${formatTime(e.endTime)}`;
+          songPos.innerText = `${format(e.currentTime)} / ${format(e.endTime)}`;
         });
       }
 
-      select.addEventListener("change", () => loadSong(select.value));
-      loadSong(select.value);
-    };
-  </script>
-</body>
+      songSelect.addEventListener("change", () => loadPlayer(songSelect.value));
+      loadPlayer(songSelect.value);
+    </script>
+  </body>
 </html>
+   
+ 
