@@ -1,32 +1,3 @@
-function setupControl(selector) {
-    const el = document.querySelector(selector);
-    const control = el.closest(".at-wrap");
-
-    const viewPort = control.querySelector(".at-viewport");
-
-    // 🆕 Získať názov skladby z URL
-    const params = new URLSearchParams(window.location.search);
-    const songFile = params.get("song") || "tears-in-heaven.gp3"; // predvolená skladba
-
-    // 🆕 Načítanie zo zložky scores/
-    const at = new alphaTab.AlphaTabApi(el, {
-        file: "scores/" + songFile,
-        player: {
-            enablePlayer: true,
-            soundFont:
-                "https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2",
-            scrollElement: viewPort,
-            scrollOffsetX: -10,
-        },
-    });
-
-    at.error.on((e) => {
-        console.error("alphaTab error", e);
-        alert("❌ Nepodarilo sa načítať skladbu: " + songFile);
-    });
-
-    // zvyšok tvojho pôvodného kódu ostáva rovnaký...
-
 const toDomElement = (() => {
     const parser = document.createElement("div");
     return (html) => {
@@ -91,19 +62,29 @@ function setupControl(selector) {
     const control = el.closest(".at-wrap");
 
     const viewPort = control.querySelector(".at-viewport");
+
+    // 🆕 Získať názov skladby z URL
+    const params = new URLSearchParams(window.location.search);
+    const songFile = params.get("song") || "tears-in-heaven.gp3"; // predvolená skladba
+
+    // 🆕 Načítanie zo zložky scores/
     const at = new alphaTab.AlphaTabApi(el, {
-        file: "https://www.alphatab.net/files/canon.gp",
+        file: "scores/" + songFile,
         player: {
             enablePlayer: true,
             soundFont:
-                "https://cdn.jsdelivr.net/npm/@coderline/alphatab@alpha/dist/soundfont/sonivox.sf2",
+                "https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2",
             scrollElement: viewPort,
             scrollOffsetX: -10,
         },
     });
+
     at.error.on((e) => {
         console.error("alphaTab error", e);
+        alert("❌ Nepodarilo sa načítať skladbu: " + songFile);
     });
+
+    // zvyšok tvojho pôvodného kódu ostáva rovnaký...
 
     el.ondragover = (e) => {
         e.stopPropagation();
