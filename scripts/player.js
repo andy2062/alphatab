@@ -1,189 +1,316 @@
- // load elements
-      const wrapper = document.querySelector(".at-wrap");
-      const main = wrapper.querySelector(".at-main");
+const toDomElement = (() => {
+    const parser = document.createElement("div");
+    return (html) => {
+        parser.innerHTML = html;
+        return parser.firstElementChild;
+    };
+})();
 
-      // initialize alphatab  https://www.alphatab.net/files/canon.gp
-      const settings = {
-        file: "Etude VI.gp",
+function createTrackItem(at, track) {
+    const trackTemplate = Handlebars.compile(
+        document.querySelector("#at-track-template").innerHTML,
+    );
+    const trackItem = toDomElement(trackTemplate(track));
+
+    // init track controls
+    const muteButton = trackItem.querySelector(".at-track-mute");
+    const soloButton = trackItem.querySelector(".at-track-solo");
+    const volumeSlider = trackItem.querySelector(".at-track-volume");
+
+    muteButton.onclick = (e) => {
+        e.stopPropagation();
+        muteButton.classList.toggle("active");
+        at.changeTrackMute([track], muteButton.classList.contains("active"));
+    };
+
+    soloButton.onclick = (e) => {
+        e.stopPropagation();
+        soloButton.classList.toggle("active");
+        at.changeTrackSolo([track], soloButton.classList.contains("active"));
+    };
+
+    volumeSlider.oninput = (e) => {
+        e.preventDefault();
+        // Here we need to do some math to map the 1-16 slider to the
+        // volume in alphaTab. In alphaTab it is 1.0 for 100% which is
+        // equal to the volume in the track information
+        at.changeTrackVolume(
+            [track],
+            volumeSlider.value / track.playbackInfo.volume,
+        );
+    };
+
+    volumeSlider.onclick = (e) => {
+        e.stopPropagation();
+    };
+
+    trackItem.onclick = (e) => {
+        e.stopPropagation();
+        at.renderTracks([track]);
+    };
+
+    muteButton.value = track.playbackInfo.isMute;
+    soloButton.value = track.playbackInfo.isSolo;
+    volumeSlider.value = track.playbackInfo.volume;
+
+    trackItem.track = track;
+    return trackItem;
+}
+
+function setupControl(selector) {
+    const el = document.querySelector(selector);
+    const control = el.closest(".at-wrap");
+
+    const viewPort = control.querySelector(".at-viewport");
+    const at = new alphaTab.AlphaTabApi(el, {
+        file: "https://www.alphatab.net/files/canon.gp",
         player: {
-          enablePlayer: true,
-          soundFont: "https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2",
-          scrollElement: wrapper.querySelector('.at-viewport')
+            enablePlayer: true,
+            soundFont:
+                "https://cdn.jsdelivr.net/npm/@coderline/alphatab@alpha/dist/soundfont/sonivox.sf2",
+            scrollElement: viewPort,
+            scrollOffsetX: -10,
         },
-      };
-      const api = new alphaTab.AlphaTabApi(main, settings);
+    });
+    at.error.on((e) => {
+        console.error("alphaTab error", e);
+    });
 
-      // overlay logic
-      const overlay = wrapper.querySelector(".at-overlay");
-      api.renderStarted.on(() => {
-        overlay.style.display = "flex";
-      });
-      api.renderFinished.on(() => {
-        overlay.style.display = "none";
-      });
+    el.ondragover = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "link";
+    };
 
-      // track selector
-      function createTrackItem(track) {
-        const trackItem = document
-          .querySelector("#at-track-template")
-          .content.cloneNode(true).firstElementChild;
-        trackItem.querySelector(".at-track-name").innerText = track.name;
-        trackItem.track = track;
-        trackItem.onclick = (e) => {
-          e.stopPropagation();
-          api.renderTracks([track]);
-        };
-        return trackItem;
-      }
-      const trackList = wrapper.querySelector(".at-track-list");
-      api.scoreLoaded.on((score) => {
-        // clear items
-        trackList.innerHTML = "";
-        // generate a track item for all tracks of the score
-        score.tracks.forEach((track) => {
-          trackList.appendChild(createTrackItem(track));
-        });
-      });
-      api.renderStarted.on(() => {
-        // collect tracks being rendered
+    el.ondrop = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const files = e.dataTransfer.files;
+        if (files.length === 1) {
+            const reader = new FileReader();
+            reader.onload = (data) => {
+                at.load(data.target.result, [0]);
+            };
+            reader.readAsArrayBuffer(files[0]);
+        }
+        console.log("drop", files);
+    };
+
+    const trackItems = [];
+    at.renderStarted.on((isResize) => {
+        if (!isResize) {
+            control.classList.add("loading");
+        }
         const tracks = new Map();
-        api.tracks.forEach((t) => {
-          tracks.set(t.index, t);
-        });
-        // mark the item as active or not
-        const trackItems = trackList.querySelectorAll(".at-track");
-        trackItems.forEach((trackItem) => {
-          if (tracks.has(trackItem.track.index)) {
-            trackItem.classList.add("active");
-          } else {
-            trackItem.classList.remove("active");
-          }
-        });
-      });
-
-      /** Controls **/
-      api.scoreLoaded.on((score) => {
-        wrapper.querySelector(".at-song-title").innerText = score.title;
-        wrapper.querySelector(".at-song-artist").innerText = score.artist;
-      });
-
-      const countIn = wrapper.querySelector('.at-controls .at-count-in');
-      countIn.onclick = () => {
-        countIn.classList.toggle('active');
-        if (countIn.classList.contains('active')) {
-          api.countInVolume = 1;
-        } else {
-          api.countInVolume = 0;
+        for (const t of at.tracks) {
+            tracks.set(t.index, t);
         }
-      };
-      
-      const metronome = wrapper.querySelector(".at-controls .at-metronome");
-      metronome.onclick = () => {
-        metronome.classList.toggle("active");
-        if (metronome.classList.contains("active")) {
-          api.metronomeVolume = 1;
-        } else {
-          api.metronomeVolume = 0;
+
+        for (const trackItem of trackItems) {
+            if (tracks.has(trackItem.track.index)) {
+                trackItem.classList.add("active");
+            } else {
+                trackItem.classList.remove("active");
+            }
         }
-      };
+    });
 
-      const loop = wrapper.querySelector(".at-controls .at-loop");
-      loop.onclick = () => {
-        loop.classList.toggle("active");
-        api.isLooping = loop.classList.contains("active");
-      };
+    const playerLoadingIndicator = control.querySelector(".at-player-loading");
+    at.soundFontLoad.on((args) => {
+        updateProgress(playerLoadingIndicator, args.loaded / args.total);
+    });
+    at.soundFontLoaded.on(() => {
+        playerLoadingIndicator.classList.add("d-none");
+    });
+    at.renderFinished.on(() => {
+        control.classList.remove("loading");
+    });
 
-      wrapper.querySelector(".at-controls .at-print").onclick = () => {
-        api.print();
-      };
+    at.scoreLoaded.on((score) => {
+        control.querySelector(".at-song-title").innerText = score.title;
+        control.querySelector(".at-song-artist").innerText = score.artist;
 
-      const zoom = wrapper.querySelector(".at-controls .at-zoom select");
-      zoom.onchange = () => {
-        const zoomLevel = parseInt(zoom.value) / 100;
-        api.settings.display.scale = zoomLevel;
-        api.updateSettings();
-        api.render();
-      };
+        // fill track selector
+        const trackList = control.querySelector(".at-track-list");
+        trackList.innerHTML = "";
 
-      const layout = wrapper.querySelector(".at-controls .at-layout select");
-      layout.onchange = () => {
-        switch (layout.value) {
-          case "horizontal":
-            api.settings.display.layoutMode = alphaTab.LayoutMode.Horizontal;
-            break;
-          case "page":
-            api.settings.display.layoutMode = alphaTab.LayoutMode.Page;
-            break;
+        for (const track of score.tracks) {
+            const trackItem = createTrackItem(at, track);
+            trackItems.push(trackItem);
+            trackList.appendChild(trackItem);
         }
-        api.updateSettings();
-        api.render();
-      };
 
-      // player loading indicator
-      const playerIndicator = wrapper.querySelector(
-        ".at-controls .at-player-progress"
-      );
-      api.soundFontLoad.on((e) => {
-        const percentage = Math.floor((e.loaded / e.total) * 100);
-        playerIndicator.innerText = percentage + "%";
-      });
-      api.playerReady.on(() => {
-        playerIndicator.style.display = "none";
-      });
+        currentTempo = score.tempo;
+    });
 
-      // main player controls
-      const playPause = wrapper.querySelector(
-        ".at-controls .at-player-play-pause"
-      );
-      const stop = wrapper.querySelector(".at-controls .at-player-stop");
-      playPause.onclick = (e) => {
-        if (e.target.classList.contains("disabled")) {
-          return;
-        }
-        api.playPause();
-      };
-      stop.onclick = (e) => {
-        if (e.target.classList.contains("disabled")) {
-          return;
-        }
-        api.stop();
-      };
-      api.playerReady.on(() => {
-        playPause.classList.remove("disabled");
-        stop.classList.remove("disabled");
-      });
-      api.playerStateChanged.on((e) => {
-        const icon = playPause.querySelector("i.fas");
-        if (e.state === alphaTab.synth.PlayerState.Playing) {
-          icon.classList.remove("fa-play");
-          icon.classList.add("fa-pause");
-        } else {
-          icon.classList.remove("fa-pause");
-          icon.classList.add("fa-play");
-        }
-      });
+    let currentTempo = 0;
+    const timePositionLabel = control.querySelector(".at-time-position");
+    const timeSliderValue = control.querySelector(".at-time-slider-value");
 
-      // song position
-      function formatDuration(milliseconds) {
+    function formatDuration(milliseconds) {
         let seconds = milliseconds / 1000;
         const minutes = (seconds / 60) | 0;
         seconds = (seconds - minutes * 60) | 0;
-        return (
-          String(minutes).padStart(2, "0") +
-          ":" +
-          String(seconds).padStart(2, "0")
-        );
-      }
+        return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    }
 
-      const songPosition = wrapper.querySelector(".at-song-position");
-      let previousTime = -1;
-      api.playerPositionChanged.on((e) => {
+    let previousTime = -1;
+    at.playerPositionChanged.on((args) => {
         // reduce number of UI updates to second changes.
-        const currentSeconds = (e.currentTime / 1000) | 0;
-        if (currentSeconds == previousTime) {
-          return;
+        const currentSeconds = (args.currentTime / 1000) | 0;
+        if (currentSeconds === previousTime) {
+            return;
         }
+        previousTime = currentSeconds;
 
-        songPosition.innerText =
-          formatDuration(e.currentTime) + " / " + formatDuration(e.endTime);
-      });
+        timePositionLabel.innerText = `${formatDuration(args.currentTime)} / ${formatDuration(args.endTime)}`;
+        timeSliderValue.style.width = `${((args.currentTime / args.endTime) * 100).toFixed(2)}%`;
+    });
+
+    const playPauseButton = control.querySelector(".at-play-pause");
+    at.playerReady.on(() => {
+        for (const c of control.querySelectorAll(".at-player .disabled")) {
+            c.classList.remove("disabled");
+        }
+    });
+
+    at.playerStateChanged.on((args) => {
+        const icon = playPauseButton.querySelector("i");
+        if (args.state === 0) {
+            icon.classList.remove("fa-pause");
+            icon.classList.add("fa-play");
+        } else {
+            icon.classList.remove("fa-play");
+            icon.classList.add("fa-pause");
+        }
+    });
+
+    playPauseButton.onclick = (e) => {
+        e.stopPropagation();
+        if (!e.target.classList.contains("disabled")) {
+            at.playPause();
+        }
+    };
+
+    control.querySelector(".at-stop").onclick = (e) => {
+        e.stopPropagation();
+        if (!e.target.classList.contains("disabled")) {
+            at.stop();
+        }
+    };
+
+    control.querySelector(".at-metronome").onclick = (e) => {
+        e.stopPropagation();
+        const link = e.target.closest("a");
+        link.classList.toggle("active");
+        if (link.classList.contains("active")) {
+            at.metronomeVolume = 1;
+        } else {
+            at.metronomeVolume = 0;
+        }
+    };
+
+    control.querySelector(".at-count-in").onclick = (e) => {
+        e.stopPropagation();
+        const link = e.target.closest("a");
+        link.classList.toggle("active");
+        if (link.classList.contains("active")) {
+            at.countInVolume = 1;
+        } else {
+            at.countInVolume = 0;
+        }
+    };
+
+    for (const a of control.querySelectorAll(".at-speed-options a")) {
+        a.onclick = (e) => {
+            e.preventDefault();
+            at.playbackSpeed = Number.parseFloat(e.target.innerText);
+            control.querySelector(".at-speed-label").innerText = e.target.innerText;
+        };
+    }
+
+    control.querySelector(".at-loop").onclick = (e) => {
+        e.stopPropagation();
+        const link = e.target.closest("a");
+        link.classList.toggle("active");
+        if (link.classList.contains("active")) {
+            at.isLooping = true;
+        } else {
+            at.isLooping = false;
+        }
+    };
+
+    control.querySelector(".at-print").onclick = () => {
+        at.print();
+    };
+
+    control.querySelector(".at-download").onclick = () => {
+        const exporter = new alphaTab.exporter.Gp7Exporter();
+        const data = exporter.export(at.score, at.settings);
+        const a = document.createElement("a");
+        a.download = at.score.title.length > 0 ? `${at.score.title}.gp` : "song.gp";
+        a.href = URL.createObjectURL(new Blob([data]));
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+
+    for (const a of control.querySelectorAll(".at-zoom-options a")) {
+        a.onclick = (e) => {
+            e.preventDefault();
+            at.settings.display.scale = Number.parseInt(e.target.innerText) / 100.0;
+            control.querySelector(".at-zoom-label").innerText = e.target.innerText;
+            at.updateSettings();
+            at.render();
+        };
+    }
+
+    for (const a of control.querySelectorAll(".at-layout-options a")) {
+        a.onclick = (e) => {
+            e.preventDefault();
+            const settings = at.settings;
+            switch (e.target.dataset.layout) {
+                case "page":
+                    settings.display.layoutMode = alphaTab.LayoutMode.Page;
+                    settings.player.scrollMode = alphaTab.ScrollMode.Continuous;
+                    break;
+                case "horizontal-bar":
+                    settings.display.layoutMode = alphaTab.LayoutMode.Horizontal;
+                    settings.player.scrollMode = alphaTab.ScrollMode.Continuous;
+                    break;
+                case "horizontal-screen":
+                    settings.display.layoutMode = alphaTab.LayoutMode.Horizontal;
+                    settings.player.scrollMode = alphaTab.ScrollMode.OffScreen;
+                    break;
+            }
+
+            at.updateSettings();
+            at.render();
+        };
+    }
+
+    $(control).find('[data-toggle="tooltip"]').tooltip();
+
+    return at;
+}
+
+function updateProgress(el, value) {
+    const percentValue = value * 100;
+    const left = el.querySelector(".progress-left .progress-bar");
+    const right = el.querySelector(".progress-right .progress-bar");
+    function percentageToDegrees(percentage) {
+        return (percentage / 100) * 360;
+    }
+
+    if (percentValue > 0) {
+        if (percentValue <= 50) {
+            right.style.transform = `rotate(${percentageToDegrees(percentValue)}deg)`;
+        } else {
+            right.style.transform = "rotate(180deg)";
+            left.style.transform = `rotate(${percentageToDegrees(percentValue - 50)}deg)`;
+        }
+    }
+    el.querySelector(".progress-value-number").innerText = percentValue | 0;
+}
+
+setupControl("#alphaTab");
