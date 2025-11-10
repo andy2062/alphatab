@@ -58,26 +58,46 @@ function createTrackItem(at, track) {
 }
 
 function setupControl(selector) {
-    const el = document.querySelector(selector);
-    const control = el.closest(".at-wrap");
+    // 🆕 upravená verzia úvodu v player.js
+const params = new URLSearchParams(window.location.search);
+let songFile = params.get("song") || "Tears-In-Heaven.gp3"; // predvolená skladba
 
-    const viewPort = control.querySelector(".at-viewport");
+// ak používateľ nezadal celú cestu, doplň /scores/
+if (!songFile.startsWith("scores/")) {
+    songFile = "scores/" + songFile;
+}
 
+const el = document.querySelector("#alphaTab");
+const control = el.closest(".at-wrap");
+const viewPort = control.querySelector(".at-viewport");
+
+const at = new alphaTab.AlphaTabApi(el, {
+    file: songFile,
+    player: {
+        enablePlayer: true,
+        soundFont: "https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2",
+        scrollElement: viewPort,
+        scrollOffsetX: -10,
+    },
+});
+    
+//    const el = document.querySelector(selector);
+//    const control = el.closest(".at-wrap");
+//    const viewPort = control.querySelector(".at-viewport");
     // 🆕 Získať názov skladby z URL
-    const params = new URLSearchParams(window.location.search);
-    const songFile = params.get("song") || "tears-in-heaven.gp3"; // predvolená skladba
-
+//    const params = new URLSearchParams(window.location.search);
+//    const songFile = params.get("song") || "tears-in-heaven.gp3"; // predvolená skladba
     // 🆕 Načítanie zo zložky scores/
-    const at = new alphaTab.AlphaTabApi(el, {
-        file: "scores/" + songFile,
-        player: {
-            enablePlayer: true,
-            soundFont:
-                "https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2",
-            scrollElement: viewPort,
-            scrollOffsetX: -10,
-        },
-    });
+//    const at = new alphaTab.AlphaTabApi(el, {
+  //      file: "scores/" + songFile,
+  //      player: {
+   //         enablePlayer: true,
+   //         soundFont:
+   //             "https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2",
+   //         scrollElement: viewPort,
+    //        scrollOffsetX: -10,
+    //    },
+   // });
 
     at.error.on((e) => {
         console.error("alphaTab error", e);
