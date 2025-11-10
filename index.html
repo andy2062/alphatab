@@ -1,141 +1,108 @@
 <!DOCTYPE html>
 <html lang="sk">
 <head>
-  <meta charset="utf-8" />
-  <title>🎸 Moje gitarové skladby</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
-
-  <style>
-    body {
-      background: linear-gradient(135deg, #e0ebff, #f8faff);
-      font-family: "Segoe UI", sans-serif;
-      min-height: 100vh;
-      padding-top: 50px;
-    }
-
-    .container {
-      max-width: 1100px;
-    }
-
-    h1 {
-      font-weight: 700;
-      color: #333;
-      margin-bottom: 30px;
-      text-align: center;
-    }
-
-    .card {
-      border: none;
-      border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-      cursor: pointer;
-    }
-
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
-    }
-
-    .card-body {
-      text-align: center;
-      padding: 25px;
-    }
-
-    .card-title {
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: #2a3d66;
-    }
-
-    .card-text {
-      color: #555;
-      font-size: 0.95rem;
-    }
-
-    .play-btn {
-      background-color: #436d9d;
-      color: #fff;
-      border: none;
-      border-radius: 25px;
-      padding: 10px 25px;
-      font-weight: 500;
-      transition: background 0.3s;
-    }
-
-    .play-btn:hover {
-      background-color: #5c85b6;
-    }
-
-    footer {
-      text-align: center;
-      color: #777;
-      margin-top: 50px;
-      font-size: 0.9rem;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <title>Gitara – Zoznam ročníkov</title>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
+<body class="bg-light">
 
-<body>
-  <div class="container">
-    <h1><i class="fas fa-guitar"></i> Moje gitarové skladby</h1>
+  <div class="container py-5 text-center">
+    <h1 class="mb-4"><i class="fas fa-guitar text-primary"></i> Gitara – Výber ročníka</h1>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
 
-    <div class="row g-4">
-      <!-- Tears in Heaven -->
-      <div class="col-md-4">
-        <div class="card">
+      <!-- 1. ročník -->
+      <div class="col">
+        <div class="card shadow-sm border-0">
           <div class="card-body">
-            <i class="fas fa-music fa-3x text-primary mb-3"></i>
-            <h5 class="card-title">Tears In Heaven</h5>
-            <p class="card-text">Eric Clapton</p>
-            <button class="play-btn" onclick="openSong('Tears-In-Heaven.gp3')">
-              <i class="fas fa-play"></i> Prehrať
-            </button>
+            <i class="fas fa-music fa-3x text-success mb-3"></i>
+            <h5 class="card-title">1. ročník</h5>
+            <a href="rocnik1.html" class="btn btn-primary mt-2">Otvoriť</a>
           </div>
         </div>
       </div>
 
-      <!-- Etude VI -->
-      <div class="col-md-4">
-        <div class="card">
+      <!-- 2. ročník -->
+      <div class="col">
+        <div class="card shadow-sm border-0">
           <div class="card-body">
-            <i class="fas fa-guitar fa-3x text-success mb-3"></i>
-            <h5 class="card-title">Etude VI</h5>
-            <p class="card-text">L. Brouwer</p>
-            <button class="play-btn" onclick="openSong('Etude VI.gp')">
-              <i class="fas fa-play"></i> Prehrať
-            </button>
+            <i class="fas fa-guitar fa-3x text-info mb-3"></i>
+            <h5 class="card-title">2. ročník</h5>
+            <a href="rocnik2.html" class="btn btn-primary mt-2">Otvoriť</a>
           </div>
         </div>
       </div>
 
-      <!-- Oteckovia -->
-      <div class="col-md-4">
-        <div class="card">
+      <!-- 3. ročník -->
+      <div class="col">
+        <div class="card shadow-sm border-0">
           <div class="card-body">
-            <i class="fas fa-guitar fa-3x text-warning mb-3"></i>
-            <h5 class="card-title">Oteckovia</h5>
-            <p class="card-text">Slovenská pieseň</p>
-            <button class="play-btn" onclick="openSong('oteckovia.gp5')">
-              <i class="fas fa-play"></i> Prehrať
-            </button>
+            <i class="fas fa-music fa-3x text-warning mb-3"></i>
+            <h5 class="card-title">3. ročník</h5>
+            <a href="rocnik3.html" class="btn btn-primary mt-2">Otvoriť</a>
           </div>
         </div>
       </div>
+
+       <!-- 4. ročník -->
+      <div class="col">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <i class="fas fa-music fa-3x text-warning mb-3"></i>
+            <h5 class="card-title">4. ročník</h5>
+            <a href="rocnik4.html" class="btn btn-primary mt-2">Otvoriť</a>
+          </div>
+        </div>
+      </div>
+      
+ <!-- 5. ročník -->
+      <div class="col">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <i class="fas fa-music fa-3x text-warning mb-3"></i>
+            <h5 class="card-title">5. ročník</h5>
+            <a href="rocnik5.html" class="btn btn-primary mt-2">Otvoriť</a>
+          </div>
+        </div>
+      </div>
+
+       <!-- 6. ročník -->
+      <div class="col">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <i class="fas fa-music fa-3x text-warning mb-3"></i>
+            <h5 class="card-title">6. ročník</h5>
+            <a href="rocnik6.html" class="btn btn-primary mt-2">Otvoriť</a>
+          </div>
+        </div>
+      </div>
+
+       <!-- 7. ročník -->
+      <div class="col">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <i class="fas fa-music fa-3x text-warning mb-3"></i>
+            <h5 class="card-title">7. ročník</h5>
+            <a href="rocnik7.html" class="btn btn-primary mt-2">Otvoriť</a>
+          </div>
+        </div>
+      </div>
+
+       <!-- 8. ročník -->
+      <div class="col">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <i class="fas fa-music fa-3x text-warning mb-3"></i>
+            <h5 class="card-title">8. ročník</h5>
+            <a href="rocnik8.html" class="btn btn-primary mt-2">Otvoriť</a>
+          </div>
+        </div>
+      </div>
+
+      
     </div>
-
-    <footer class="mt-5">
-      <p>🎶 GitHub Music Player – vytvorené s <i class="fas fa-heart text-danger"></i> a AlphaTab</p>
-    </footer>
   </div>
 
-  <script>
-    function openSong(songFile) {
-      window.location.href = `player.html?song=${encodeURIComponent(songFile)}`;
-    }
-  </script>
 </body>
 </html>
