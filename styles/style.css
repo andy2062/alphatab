@@ -1,6 +1,6 @@
 .back-button-container {
     position: fixed;
-    top: 10px;
+    bottom: 10px;
     left: 10px;
     z-index: 2000;
 }
