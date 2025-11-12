@@ -27,10 +27,13 @@
 </head>
 
 <body>
-   <div class="back-button-container">
-        <a href="index.html" class="back-button">
+    <div class="back-button-container">
+        <button id="btn-back" class="btn btn-outline-primary m-3">
+    ⬅️ Späť na zoznam skladieb
+</button>
+    <!--    <a href="index.html" class="back-button">
             ← Späť na zoznam skladieb
-        </a>
+        </a>   -->
     </div>
     <div class="at-wrap loading">
         <div class="at-overlay">
@@ -197,5 +200,13 @@
     </template>
      
     <script src="scripts/player.js"></script>
+    <script>
+    const params = new URLSearchParams(window.location.search);
+    const backPage = params.get("back") || "index.html";
+
+    document.getElementById("btn-back").onclick = () => {
+        window.location.href = backPage;
+    };
+</script>
 </body>
 </html>
